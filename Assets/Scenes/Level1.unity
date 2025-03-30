@@ -450,7 +450,7 @@ Transform:
   m_GameObject: {fileID: 473385895}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -3.4, y: 2.62, z: 0.12}
+  m_LocalPosition: {x: -3.4, y: 1.91, z: 0.12}
   m_LocalScale: {x: 1, y: 1, z: 20.278864}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -474,7 +474,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4303f60fbc58c0241ac5eab646b7b445, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -18.54
+      value: -17.95
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 4303f60fbc58c0241ac5eab646b7b445, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1070,7 +1070,7 @@ BoxCollider:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 946545643}
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 13400000, guid: e763a95957afd8d42b54843f116883e1, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -1975,7 +1975,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7208319304333439800, guid: bb6a0a4eb51dee040ab82a088041da0a, type: 3}
       propertyPath: m_Drag
-      value: 8
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1983,7 +1983,7 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 6394606814245286427, guid: bb6a0a4eb51dee040ab82a088041da0a, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 9086593058301825084}
+      addedObject: {fileID: 7077232859024856364}
   m_SourcePrefab: {fileID: 100100000, guid: bb6a0a4eb51dee040ab82a088041da0a, type: 3}
 --- !u!1001 &3335306742989424410
 PrefabInstance:
@@ -2112,7 +2112,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 6394606814245286427, guid: bb6a0a4eb51dee040ab82a088041da0a, type: 3}
   m_PrefabInstance: {fileID: 918355945302192536}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &9086593058301825084
+--- !u!114 &7077232859024856364
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2124,13 +2124,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8910c78b2042ae4187deb9fc0180cea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 6
-  sprintSpeed: 12
-  jumpForce: 50
+  walkSpeed: 5
+  sprintSpeed: 9
+  lookSpeed: 2
+  jumpForce: 6
   groundLayer:
     serializedVersion: 2
     m_Bits: 64
-  sensitivity: 2
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

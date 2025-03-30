@@ -1,103 +1,78 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class RigidbodyCharacterController : MonoBehaviour
+public class SimpleFirstPersonController : MonoBehaviour
 {
-    public float speed = 6f;
-    public float sprintSpeed = 12f;
-    public float jumpForce = 6f;
-    public LayerMask groundLayer;
-    public float sensitivity = 2f;
+    public float walkSpeed = 5f;   // Movement speed
+    public float sprintSpeed = 12f;   // Movement speed
+    public float lookSpeed = 2f;   // Mouse sensitivity
+    public float jumpForce = 5f;   // Jump height
+    public LayerMask groundLayer;  // Layer for ground detection
 
     private Rigidbody rb;
-    private Transform cameraTransform;
+    private Camera playerCamera;
     private bool isGrounded;
-    private float rotationX = 0f;
-    private float currentSpeed;
+    private bool isCrouching;
+    private float moveSpeed;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
-        cameraTransform = Camera.main.transform;
-        Cursor.lockState = CursorLockMode.Locked;
-        rb.freezeRotation = true;
-        rb.useGravity = true;  // Ensures gravity is enabled
+        playerCamera = Camera.main;
+        Cursor.lockState = CursorLockMode.Locked;  // Lock cursor to the screen
+        moveSpeed = walkSpeed;
     }
 
     void Update()
     {
-        MovePlayer();
-        LookAround();
-        CheckGrounded();
+        // Movement
+        float moveX = Input.GetAxis("Horizontal");
+        float moveZ = Input.GetAxis("Vertical");
+        Vector3 moveDirection = transform.right * moveX + transform.forward * moveZ;
+        rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
 
-        // Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        // Sprint
+        if (isGrounded && !isCrouching && Input.GetKey(KeyCode.LeftShift))
         {
-            Jump();
-        }
-
-        if (Input.GetKey(KeyCode.LeftShift))
-        {
-            currentSpeed = sprintSpeed;
-            jumpForce = 40f;
+            moveSpeed = sprintSpeed;
         }
         else
         {
-            currentSpeed = speed;
-            jumpForce = 20f;
+            moveSpeed = walkSpeed;
+        }
+
+        // Jumping
+        if (isGrounded && !isCrouching && Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
 
         // Crouching
         if (Input.GetKey(KeyCode.LeftControl))
         {
             transform.localScale = new Vector3(1f, 0.5f, 1f);
-            currentSpeed = speed;
+            isCrouching = true;
         }
         else
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
+            isCrouching = false;
         }
 
-        if (!isGrounded)
-        {
-            transform.position += Vector3.down * 4f * Time.deltaTime; // Adjust speed as needed
-        }
-        else 
-        {
-            rb.linearDamping = 8f;
-        }
+        // Looking around
+        float mouseX = Input.GetAxis("Mouse X") * lookSpeed;
+        float mouseY = Input.GetAxis("Mouse Y") * lookSpeed;
+
+        transform.Rotate(Vector3.up * mouseX);  // Rotate body horizontally
+        playerCamera.transform.Rotate(Vector3.left * mouseY);  // Rotate camera vertically
+
+        CheckGrounded();  // Update ground check
     }
 
-    void MovePlayer()
-    {
-        float moveX = Input.GetAxis("Horizontal");
-        float moveZ = Input.GetAxis("Vertical");
-
-        Vector3 moveDirection = transform.right * moveX + transform.forward * moveZ;
-        
-        rb.AddForce(moveDirection.normalized * currentSpeed, ForceMode.Acceleration);
-    }
-
-    void LookAround()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * sensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * sensitivity;
-
-        rotationX -= mouseY;
-        rotationX = Mathf.Clamp(rotationX, -90f, 90f);
-
-        cameraTransform.localRotation = Quaternion.Euler(rotationX, 0f, 0f);
-        transform.Rotate(Vector3.up * mouseX);
-    }
-
-    void Jump()
-    {
-        rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-    }
-
+    // Check if the player is grounded
     void CheckGrounded()
     {
         RaycastHit hit;
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, out hit, 1.2f, groundLayer);
+        isGrounded = Physics.Raycast(transform.position, Vector3.down, out hit, 1.1f, groundLayer);
     }
 }
