@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 1185807418946650732}
   - component: {fileID: 4687392959512416190}
   - component: {fileID: 7208319304333439800}
+  - component: {fileID: 1419869742760830608}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -139,6 +140,27 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!114 &1419869742760830608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6394606814245286427}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d8910c78b2042ae4187deb9fc0180cea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  walkSpeed: 5
+  sprintSpeed: 9
+  lookSpeed: 2
+  jumpForce: 6
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  iceAcceleration: 2
+  iceFriction: 0.98
 --- !u!1 &7849917037660137899
 GameObject:
   m_ObjectHideFlags: 0

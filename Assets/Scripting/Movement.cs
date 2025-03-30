@@ -3,52 +3,60 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class SimpleFirstPersonController : MonoBehaviour
 {
-    public float walkSpeed = 5f;   // Movement speed
-    public float sprintSpeed = 12f;   // Movement speed
-    public float lookSpeed = 2f;   // Mouse sensitivity
-    public float jumpForce = 5f;   // Jump height
-    public LayerMask groundLayer;  // Layer for ground detection
-
+    public float walkSpeed = 5f;
+    public float sprintSpeed = 12f;
+    public float lookSpeed = 2f;
+    public float jumpForce = 5f;
+    public LayerMask groundLayer;
+    
     private Rigidbody rb;
     private Camera playerCamera;
     private bool isGrounded;
     private bool isCrouching;
     private bool isSticky;
+    private bool isOnIce;
     private float moveSpeed;
+    private Vector3 lastVelocity;
+
+    public float iceAcceleration = 2f; // How fast the player gains control on ice
+    public float iceFriction = 0.98f;  // How much sliding slows down over time
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         playerCamera = Camera.main;
-        Cursor.lockState = CursorLockMode.Locked;  // Lock cursor to the screen
+        Cursor.lockState = CursorLockMode.Locked;
         moveSpeed = walkSpeed;
     }
 
     void Update()
     {
-        // Movement
+        CheckGrounded();
+
         float moveX = Input.GetAxis("Horizontal");
         float moveZ = Input.GetAxis("Vertical");
         Vector3 moveDirection = transform.right * moveX + transform.forward * moveZ;
-        rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
 
-        // Sprint
-        if (!isSticky)
+        if (!isOnIce) 
         {
-            if (isGrounded && !isCrouching && Input.GetKey(KeyCode.LeftShift))
-            {
-                moveSpeed = sprintSpeed;
-            }
-            else
-            {
-                moveSpeed = walkSpeed;
-            }
+            // Normal movement on ground
+            rb.linearVelocity = new Vector3(moveDirection.x * moveSpeed, rb.linearVelocity.y, moveDirection.z * moveSpeed);
         }
         else
         {
-            moveSpeed = walkSpeed/3;
+            // Add force for gradual movement on ice
+            rb.AddForce(moveDirection * iceAcceleration, ForceMode.Acceleration);
         }
 
+        // Sprinting
+        if (!isSticky && !isOnIce)
+        {
+            moveSpeed = (isGrounded && !isCrouching && Input.GetKey(KeyCode.LeftShift)) ? sprintSpeed : walkSpeed;
+        }
+        else if (isSticky)
+        {
+            moveSpeed = walkSpeed / 3;
+        }
 
         // Jumping
         if (isGrounded && !isCrouching && !isSticky && Input.GetKeyDown(KeyCode.Space))
@@ -72,13 +80,19 @@ public class SimpleFirstPersonController : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X") * lookSpeed;
         float mouseY = Input.GetAxis("Mouse Y") * lookSpeed;
 
-        transform.Rotate(Vector3.up * mouseX);  // Rotate body horizontally
-        playerCamera.transform.Rotate(Vector3.left * mouseY);  // Rotate camera vertically
-
-        CheckGrounded();  // Update ground check
+        transform.Rotate(Vector3.up * mouseX);
+        playerCamera.transform.Rotate(Vector3.left * mouseY);
     }
 
-    // Check if the player is grounded
+    void FixedUpdate()
+    {
+        if (isOnIce)
+        {
+            // Gradually reduce speed for sliding effect
+            rb.linearVelocity = new Vector3(rb.linearVelocity.x * iceFriction, rb.linearVelocity.y, rb.linearVelocity.z * iceFriction);
+        }
+    }
+
     void CheckGrounded()
     {
         RaycastHit hit;
@@ -91,12 +105,23 @@ public class SimpleFirstPersonController : MonoBehaviour
         {
             isSticky = true;
         }
+
+        if (collision.gameObject.CompareTag("Icey"))
+        {
+            isOnIce = true;
+        }
     }
+
     void OnCollisionExit(Collision collision)
     {
         if (collision.gameObject.CompareTag("Sticky"))
         {
             isSticky = false;
+        }
+
+        if (collision.gameObject.CompareTag("Icey"))
+        {
+            isOnIce = false;
         }
     }
 }
